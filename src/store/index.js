@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 Vue.use(Vuex)
 
+import { book } from './modules/book/index'
+import { getters } from './getters'
 export default new Vuex.Store({
   state: {
   },
@@ -11,5 +12,8 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
+    book
+  }, getters: {
+    ...getters
   }
 })

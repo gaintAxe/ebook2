@@ -19,6 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   overflow: hidden;
 }
 body {
-  background: #dcdcdc;
+  background: gray;
 }
 </style>

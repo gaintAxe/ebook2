@@ -27,7 +27,6 @@ export function setBookObject(filename, key, val) {
 
 export function getBookObject(filename, key) {
   let book = getLocalStorage(`${filename}-info`);
-  // console.log('book',book)
   if (book) {
     return book[key];
   } else {
@@ -133,6 +132,14 @@ export function getHome() {
 
 export function saveHome(home) {
   return setLocalStorage('home', home, 1800)
+}
+
+export function saveBookShelf(shelf) {
+  return setLocalStorage('shelf', shelf)
+}
+
+export function getBookShelf() {
+  return getLocalStorage('shelf')
 }
 
 

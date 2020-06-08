@@ -1,11 +1,12 @@
 <template>
   <div class="ebook" ref="ebook">
     <!-- <ebook-reader></ebook-reader> -->
-
+    <ebook-header></ebook-header>
     <ebook-title></ebook-title>
     <router-view></router-view>
     <ebook-menu></ebook-menu>
     <ebook-bookmark></ebook-bookmark>
+    <ebook-footer></ebook-footer>
   </div>
 </template>
 
@@ -14,13 +15,15 @@ import EbookTitle from "../../components/ebook/ebookTitle";
 import EbookReader from "../../components/ebook/ebookReader";
 import EbookMenu from "../../components/ebook/ebookMenu";
 import EbookBookmark from "../../components/ebook/ebookBookmark";
+import EbookHeader from '../../components/ebook/ebookHeader'
+import EbookFooter from '../../components/ebook/ebookFooter'
 
 import { ebookMixin } from "../../utils/mixin";
 import { px2rem } from "../../utils/utils";
 import { getReadTime, saveReadTime } from "../../utils/localStorage";
 export default {
   mixins: [ebookMixin],
-  components: { EbookReader, EbookMenu, EbookTitle, EbookBookmark },
+  components: { EbookReader, EbookMenu, EbookTitle, EbookBookmark,EbookHeader ,EbookFooter},
   methods: {
     startLoopReadTime() {
       let readTime = getReadTime(this.fileName);

@@ -25,8 +25,10 @@
         <img :src="cover" alt class="slide-contents-book-img" />
       </div>
       <div class="slide-contents-book-info-wrapper">
-        <div class="slide-contents-book-title">{{metadata.title}}</div>
-        <div class="slide-contents-book-author">{{metadata.creator}}</div>
+        <div class="slide-contents-book-title">
+          <span class="slide-contents-book-title-text">{{metadata.title}}</span>
+        </div>
+        <div class="slide-contents-book-author"><span class="slide-contents-book-author-text">{{metadata.creator}}</span></div>
       </div>
       <div class="slide-contents-book-progress-wrapper">
         <div class="slide-content-book-progress">
@@ -45,7 +47,7 @@
             :class="{'selected':section === index}"
             @click="display(item.href)"
           >{{item.label}}</span>
-          <span class="slide-contents-item-page"></span>
+          <span class="slide-contents-item-page">{{getSectionPageNum(index)}}</span>
         </div>
       </template>
       <!-- <div class="slide-contents-item" v-if="!bookAvailable">loadings</div> -->
@@ -86,8 +88,17 @@ export default {
       searchList: []
     };
   },
-  computed: {},
+  computed: {
+   
+  },
   methods: {
+    getSectionPageNum(index) {
+      // return this.navigation[this.section].page+
+      if(this.bookAvailable){
+         return this.navigation[index].page;
+      }
+     
+    },
     showSearchPage() {
       this.searchVisible = true;
     },
@@ -136,8 +147,7 @@ export default {
       }
     }
   },
-  mounted() {
-  }
+  mounted() {}
 };
 </script>
 
@@ -212,11 +222,19 @@ export default {
         text-overflow: ellipsis;
         word-break: keep-all;
         line-height: px2rem(16);
+        @include left;
+        .slide-contents-book-title-text{
+          @include ellipsis2(3);
+        }
       }
       .slide-contents-book-author {
         font-size: px2rem(12);
         margin-top: px2rem(5);
-        @include ellipsis;
+        // @include ellipsis;
+        @include left;
+        .slide-contents-book-author-text{
+          @include ellipsis2(1);
+        }
       }
     }
     .slide-contents-book-progress-wrapper {
@@ -252,6 +270,9 @@ export default {
         line-height: px2rem(16);
       }
       .slide-contents-item-page {
+        flex:0 0 px2rem(30);
+        font-size:px2rem(10);
+        @include right;
       }
     }
   }

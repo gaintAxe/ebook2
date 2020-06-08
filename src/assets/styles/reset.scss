@@ -62,6 +62,7 @@ html, body {
   user-select: none;
 }
 body {
+  // 在移动端触碰屏幕时高亮显示颜色 解决移动端闪烁
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 html, body {

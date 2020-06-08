@@ -66,7 +66,14 @@ export const actions = {
     setIsBookmark({ commit }, isBookmark) {
         return commit('SET_IS_BOOKMARK', isBookmark)
     },
-
+    // 12/1234
+    setPaginate: ({ commit }, paginate) => {
+        return commit('SET_PAGINATE', paginate)
+    },
+    //所有页的地址 locations
+    setPagelist: ({ commit }, pagelist) => {
+        return commit('SET_PAGELIST', pagelist)
+    },
 
 
 
@@ -75,12 +82,7 @@ export const actions = {
     setIsPaginating: ({ commit }, isPaginating) => {
         return commit('SET_IS_PAGINATING', isPaginating)
     },
-    setPaginate: ({ commit }, paginate) => {
-        return commit('SET_PAGINATE', paginate)
-    },
-    setPagelist: ({ commit }, pagelist) => {
-        return commit('SET_PAGELIST', pagelist)
-    },
+    
 
 
     setSpeakingIconBottom({ commit }, speakingIconBottom) {

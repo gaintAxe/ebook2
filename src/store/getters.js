@@ -1,14 +1,18 @@
 import { state } from './modules/book/state'
-
+import { homeState } from './modules/home/state'
 function fn(key, moduleName) {
     return (state) => {
         return state[moduleName][key]
     }
 }
 
-let obj = {}
+let bookGetters = {}
 for (let i in state) {
-    obj[i] = fn(i, 'book')
+    bookGetters[i] = fn(i, 'book')
 }
+let homeGetters = {};
 
-export let getters = { ...obj }
+for (let i in homeState) {
+    homeGetters[i] = fn(i, 'home')
+}
+export let getters = { ...bookGetters, ...homeGetters }

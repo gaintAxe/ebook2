@@ -6,20 +6,20 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path:'/',
-    redirect: '/ebook'
+    path: '/',
+    redirect: '/store'
   },
   {
     path: '/ebook',
     name: 'Ebook',
-    component: ()=>import('../views/ebook/ebook.vue'),
-    children:[
+    component: () => import('../views/ebook/ebook.vue'),
+    children: [
       {
-        path:':dir/:filename',
-        component:()=>import('../components/ebook/ebookReader.vue')
-      },{
-        path:':filename',
-        component:()=>import('../components/ebook/ebookReader.vue')
+        path: ':dir/:filename',
+        component: () => import('../components/ebook/ebookReader.vue')
+      }, {
+        path: ':filename',
+        component: () => import('../components/ebook/ebookReader.vue')
       }
     ]
   },
@@ -31,6 +31,34 @@ const routes = [
   //   // which is lazy-loaded when the route is visited.
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
+  {
+    path: '/store',
+    component: () => import('../views/store/index.vue'),
+    redirect: 'store/home',
+    children: [
+      {
+        path: 'home',
+        component: () => import('../views/store/storeHome.vue'),
+      }, {
+        path: 'list',
+        component: () => import('../views/store/StoreList.vue'),
+
+      },
+      {
+        path: 'detail',
+        component: () => import('../views/store/StoreDetail.vue'),
+
+      },{
+        path: 'shelf',
+        component: () => import('../views/store/storeShelf.vue'),
+
+      },{
+        path: 'category',
+        component: () => import('../views/store/storeCategory.vue'),
+
+      }
+    ]
+  },
 ]
 
 const router = new VueRouter({

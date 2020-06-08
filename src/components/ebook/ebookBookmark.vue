@@ -102,7 +102,7 @@ export default {
         .replace(/\)$/, "");
 
       const cfirange = `${cfibase}!,${cfistart},${cfiend})`;
-      console.log(cfirange);
+
       this.currentBook.getRange(cfirange).then(range => {
         const text = range.toString().replace(/\s\s/g, "");
         this.bookmark.push({
@@ -111,7 +111,6 @@ export default {
           text: text
         });
         saveBookmark(this.fileName, this.bookmark);
-        console.log(range.toString());
       });
     },
     removeBookmark() {
@@ -177,7 +176,7 @@ export default {
   z-index: 200;
   width: 100%;
   height: px2rem(35);
-  background: black;
+  background: gray;
   .ebook-bookmark-text-wrapper {
     position: absolute;
     right: px2rem(45);

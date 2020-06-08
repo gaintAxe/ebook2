@@ -1,3 +1,4 @@
+import { realPx } from './utils'
 export const FONT_SIZE_LIST = [
     { fontSize: 12 },
     { fontSize: 14 },
@@ -61,8 +62,10 @@ export function themeList(vue) {
             name: "default",
             style: {
                 body: {
-                    color: "#000",
-                    background: "#fff"
+                    'color': "#000",
+                    'background': "#fff",
+                    'padding-top': `${realPx(48)}px !important`,
+                    'padding-bottom': `${realPx(48)}px !important`
                 }
             }
         },
@@ -72,7 +75,9 @@ export function themeList(vue) {
             style: {
                 body: {
                     color: "#000",
-                    background: "#ceeaba"
+                    background: "#ceeaba",
+                    'padding-top': `${realPx(48)}px !important`,
+                    'padding-bottom': `${realPx(48)}px !important`
                 }
             }
         },
@@ -82,7 +87,9 @@ export function themeList(vue) {
             style: {
                 body: {
                     color: "#fff",
-                    background: "#000"
+                    background: "#000",
+                    'padding-top': `${realPx(48)}px !important`,
+                    'padding-bottom': `${realPx(48)}px !important`
                 }
             }
         },
@@ -92,7 +99,9 @@ export function themeList(vue) {
             style: {
                 body: {
                     color: "#000",
-                    background: "rgb(241,236,226)"
+                    background: "rgb(241,236,226)",
+                    'padding-top': `${realPx(48)}px !important`,
+                    'padding-bottom': `${realPx(48)}px !important`
                 }
             }
         }

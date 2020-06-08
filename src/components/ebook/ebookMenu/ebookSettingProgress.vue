@@ -37,35 +37,6 @@ import { getReadTime } from "../../../utils/localStorage";
 
 export default {
   mixins: [ebookMixin],
-  computed: {
-    //获取章节名
-    getSectionName() {
-      // if (this.section) {
-      //   const sectionInfo = this.currentBook.section(this.section);
-      //   if (
-      //     sectionInfo &&
-      //     sectionInfo.href &&
-      //     this.currentBook &&
-      //     this.currentBook.navigation
-      //   ) {
-      //     let str = this.currentBook.navigation
-      //       .get(sectionInfo.href)
-      //       .label.trim();
-      //     if (str.length > 10) {
-      //       str = str.substr(0, 20) + "...";
-      //     }
-      //     return str;
-      //   }
-      // }
-      if (!this.navigation) {
-        return "";
-      } else {
-        return this.section >= 0
-          ? this.navigation[this.section].label.substr(0, 40) + "..."
-          : "";
-      }
-    }
-  },
   methods: {
     onProgressChange(val) {
       //   最终
@@ -101,9 +72,8 @@ export default {
     }
   },
   watch: {
-    progress(val) {
-      this.updateProgressBg(val);
-    }
+  },updated(){
+     this.updateProgressBg(this.progress);
   }
 };
 </script>

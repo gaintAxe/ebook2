@@ -1,7 +1,15 @@
 <template>
   <div class="ebook-reader">
     <div id="read"></div>
-    <div class="ebook-reader-mask" @click="onMaskClick" @touchmove="move" @touchend="moveEnd"></div>
+    <div
+      class="ebook-reader-mask"
+      @click="onMaskClick"
+      @touchmove="move"
+      @touchend="moveEnd"
+      @mousedown.left="onMouseEnter"
+      @mousemove.left="onMouseMove"
+      @mouseup.left="onMouseEnd"
+    ></div>
     <!-- <div class="loading" v-if="!this.bookAvailable">
 
       <ebook-slide-loading  ></ebook-slide-loading>
@@ -16,13 +24,65 @@ global.ePub = Epub;
 import { ebookMixin } from "../../utils/mixin";
 
 import { themeList, addCss, flatten } from "../../utils/book";
+import { getLocalForage } from "../../utils/localForage";
 
 import EbookSlideLoading from "./ebookMenu/ebookSlide/ebookSlideLoading";
-const NGINX_SERVER = process.env.VUE_APP_RES_URl;
+const NGINX_SERVER = process.env.VUE_APP_RES_URL;
 export default {
   mixins: [ebookMixin],
+  data() {
+    return {
+      mouseState: 0
+    };
+  },
   components: { EbookSlideLoading },
   methods: {
+    //1-鼠标进入
+    //2-鼠标进入后移动
+    //3-鼠标从移动状态松手
+    //4-鼠标还原
+    onMouseEnter(e) {
+      this.mouseState = 1;
+      this.mouseStartTime = e.timeStamp;
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    onMouseMove(e) {
+      if (this.menuVisible || this.settingVisible > 0 || !this.bookAvailable) {
+        return;
+      }
+      if (this.mouseState === 1) {
+        this.mouseState = 2;
+      } else if (this.mouseState === 2) {
+        let offsetY = 0;
+        if (this.firstOffsetY) {
+          offsetY = e.clientY - this.firstOffsetY;
+          // if (offsetY >= 35) {
+          //   offsetY = 35;
+          // }
+          this.setOffsetY(offsetY);
+        } else {
+          this.firstOffsetY = e.clientY;
+        }
+      }
+      // e.preventDefault();
+      // e.stopPropagation();
+    },
+    onMouseEnd(e) {
+      if (this.mouseState === 2) {
+        this.setOffsetY(0);
+        this.firstOffsetY = 0;
+        this.mouseState = 3;
+      } else {
+        this.mouseState = 4;
+      }
+      const time = e.timeStamp - this.mouseStartTime;
+      if (time < 200) {
+        this.mouseState = 4;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    },
     move(e) {
       if (this.menuVisible || this.settingVisible > 0 || !this.bookAvailable) {
         return;
@@ -37,17 +97,17 @@ export default {
       } else {
         this.firstOffsetY = e.changedTouches[0].clientY;
       }
-
-      // console.log("move", offsetY);
       e.preventDefault();
       e.stopPropagation();
     },
     moveEnd(e) {
       this.setOffsetY(0);
-      // console.log("moveEnd", e.offsetY);
       this.firstOffsetY = 0;
     },
     onMaskClick(e) {
+      if (this.mouseState && (this.mouseState == 3 || this.mouseState == 2)) {
+        return;
+      }
       const offsetX = e.offsetX;
       const width = window.innerWidth;
       if (offsetX > 0 && offsetX < width * 0.3) {
@@ -94,9 +154,7 @@ export default {
         // e.preventDefault();
         // e.stopPropagetion();
       });
-      rendition.on("touchmove", e => {
-        console.log(e);
-      });
+      rendition.on("touchmove", e => {});
     },
     //注册样式文件
     registerFontFamilyCss(rendition) {
@@ -115,14 +173,18 @@ export default {
     },
 
     //初始化电子书函数
-    initEpub() {
-      const url = this.fileName;
+    initEpub(url) {
+      this.setProgress(0);
+      this.setSection(0);
+
       this.book = new Epub(url);
+
       this.setCurBook(this.book);
       this.rendition = this.book.renderTo("read", {
         width: window.innerWidth,
         height: window.innerHeight
         // method:'default'
+        // flow:'scrolled'
       });
       //渲染到read
       this.rendition.display();
@@ -152,31 +214,68 @@ export default {
             750 * (window.innerWidth / 375) * (this.defaultFontSize / 16);
           return this.book.locations.generate(pageNum);
         })
-        .then(result => {
+        .then(locations => {
+          //为章节数组添加每一页的地址
+          locations.forEach(item => {
+            if (!item) {
+              return;
+            }
+            const loc =
+              item.match(/\[(.*)\]!/).length >= 2
+                ? item.match(/\[(.*)\]!/)[1]
+                : "";
+            this.navigation.forEach(nav => {
+              if (nav.href) {
+                const href =
+                  nav.href.match(/^(.*)\.html$/) &&
+                  nav.href.match(/^(.*)\.html$/).length >= 2
+                    ? nav.href.match(/^(.*)\.html$/)[1]
+                    : "";
+                if (!nav.pageList) {
+                  nav.pageList = [];
+                }
+                if (href === loc) {
+                  nav.pageList.push(item);
+                }
+              }
+            });
+          });
+          //计算章节的页号
+          let currentPage = 1;
+          this.navigation.forEach((nav, index) => {
+            if (index === 0) {
+              nav.page = 1;
+            } else {
+              nav.page = currentPage;
+            }
+            currentPage += nav.pageList.length + 1;
+          });
+          //保存locationsList为了计算当前页
+          this.setPagelist(locations);
           this.locations = this.book.locations;
           this.setBookAvailable(true);
 
           //根据progress渲染页数
           //   this.displayForProgress(this.progress,this.currentBook.rendition)
+          //根据保存的location渲染页面
           this.dispalyForLocation(this.currentBook.rendition).then(() => {});
           console.log("ready");
         });
       //解析电子书的内容
       //获取封面的基本信息
-
       this.parseBook();
     },
     //根据路由传参来计算filename
     computedFileName() {
-      const fileName = this.$route.params.filename + ".epub";
-      const dir = this.$route.params.dir;
+      let fileName = this.$route.params.filename + ".epub";
+      let dir = this.$route.params.dir;
       let serverPath = "";
       if (!dir) {
         serverPath = NGINX_SERVER + "/" + fileName.split("|").join("/");
       } else {
         serverPath = NGINX_SERVER + "/" + dir + "/" + fileName;
       }
-      console.log(serverPath);
+      console.log(serverPath, NGINX_SERVER);
       // serverPath:http://192.168.1.4:8081/Biomedicine/2014_Book_Self-ReportedPopulationHealthA.epub
       return serverPath;
     },
@@ -244,15 +343,29 @@ export default {
         navItem.forEach(item => {
           item.level = find(item);
         });
-
         this.setNavigation(navItem);
       });
     }
   },
   mounted() {
     this.setFileName(this.computedFileName()).then(() => {
-      this.initEpub();
+      console.log(this.$route.params.filename);
+      const bookId = this.$route.params.filename.split("|")[1];
+      getLocalForage(bookId, (err, blob) => {
+        if (!err && blob) {
+          this.initEpub(blob);
+          console.log("緩存");
+        } else {
+          this.initEpub(this.fileName);
+          console.log("網絡");
+        }
+      });
     });
+  },
+  destroyed() {
+    this.setMenuVisible(false);
+    this.setSettingVisible(-1);
+    this.setPaginate("");
   }
 };
 </script>

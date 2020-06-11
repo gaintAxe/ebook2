@@ -60,7 +60,9 @@ export const ebookMixin = {
         },
         //初始化全局样式
         initGlobalStyle(theme) {
-            addCss(`${NGINX_SERVER}/theme/theme_${theme}.css`);
+            console.log(theme)
+
+            addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_${theme.toLowerCase()}.css`);
             // switch (this.defaultTheme) {
             //     case 'Default':
             //         addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
@@ -285,10 +287,14 @@ export const storeShelfMixin = {
         //获取书架书籍列表
         getShelfList() {
             let shelfList = getBookShelf()
+            console.log(shelfList)
             if (!shelfList) {
                 shelf().then(response => {
+                    console.log(response)
                     if (response.status === 200 && response.data && response.data.bookList) {
+                        
                         shelfList = appendAddToShelf(response.data.bookList)
+                        console.log(1,shelfList)
                         saveBookShelf(shelfList)
                         return this.setShelfList(shelfList)
                     }

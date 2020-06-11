@@ -34,7 +34,7 @@ const routes = [
   {
     path: '/store',
     component: () => import('../views/store/index.vue'),
-    redirect: 'store/home',
+    redirect: 'store/shelf',
     children: [
       {
         path: 'home',
@@ -62,8 +62,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+  // mode: 'history',
+  // base: process.env.BASE_URL,
   routes
 })
 

@@ -161,10 +161,18 @@ export default {
       return new Promise((resolve, reject) => {
         rendition.hooks.content.register(contents => {
           Promise.all([
-            contents.addStylesheet(`${NGINX_SERVER}/fonts/daysOne.css`),
-            contents.addStylesheet(`${NGINX_SERVER}/fonts/cabin.css`),
-            contents.addStylesheet(`${NGINX_SERVER}/fonts/montserrat.css`),
-            contents.addStylesheet(`${NGINX_SERVER}/fonts/tangerine.css`)
+            contents.addStylesheet(
+              `${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`
+            ),
+            contents.addStylesheet(
+              `${process.env.VUE_APP_RES_URL}/fonts/cabin.css`
+            ),
+            contents.addStylesheet(
+              `${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`
+            ),
+            contents.addStylesheet(
+              `${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`
+            )
           ]).then(() => {
             resolve();
           });
@@ -224,6 +232,11 @@ export default {
               item.match(/\[(.*)\]!/).length >= 2
                 ? item.match(/\[(.*)\]!/)[1]
                 : "";
+            console.log(item, loc); //A332689_1_En_15_ChapterPart4
+            //item为每一页的起止字符地址
+            //epubcfi(/6/46[A332689_1_En_BookBackmatter_OnlinePDF]!/4/2/2[Ind1]/40,/120/2/1:17.000000000001933,/196/2/1:21.000000000002046)
+            //loc为每一章的资源文件名
+            //A332689_1_En_BookBackmatter_OnlinePDF
             this.navigation.forEach(nav => {
               if (nav.href) {
                 const href =
@@ -267,15 +280,16 @@ export default {
     },
     //根据路由传参来计算filename
     computedFileName() {
+      const NGINX = process.env.VUE_APP_EPUB_URL;
       let fileName = this.$route.params.filename + ".epub";
       let dir = this.$route.params.dir;
       let serverPath = "";
       if (!dir) {
-        serverPath = NGINX_SERVER + "/" + fileName.split("|").join("/");
+        serverPath = NGINX + "/" + fileName.split("|").join("/");
       } else {
-        serverPath = NGINX_SERVER + "/" + dir + "/" + fileName;
+        serverPath = NGINX + "/" + dir + "/" + fileName;
       }
-      console.log(serverPath, NGINX_SERVER);
+      console.log(serverPath, NGINX);
       // serverPath:http://192.168.1.4:8081/Biomedicine/2014_Book_Self-ReportedPopulationHealthA.epub
       return serverPath;
     },
